@@ -2,7 +2,7 @@
 // Basically, this is the same as From. The main difference is that this should return a Result type
 // instead of the target type itself.
 // You can read more about it at https://doc.rust-lang.org/std/convert/trait.TryFrom.html
-use std::convert::{TryFrom, TryInto};
+use std::convert::{TryInto, TryFrom};
 
 #[derive(Debug)]
 struct Color {
@@ -11,7 +11,6 @@ struct Color {
     blue: u8,
 }
 
-// I AM NOT DONE
 
 // Your task is to complete this implementation
 // and return an Ok result of inner type Color.
@@ -26,6 +25,7 @@ struct Color {
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = String;
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        return Ok(Color{red: u8::try_from(tuple.0).unwrap(), green: u8::try_from(tuple.1).unwrap(), blue: u8::try_from(tuple.2).unwrap()});
     }
 }
 
@@ -33,6 +33,7 @@ impl TryFrom<(i16, i16, i16)> for Color {
 impl TryFrom<[i16; 3]> for Color {
     type Error = String;
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        Ok(Color{red: u8::try_from(arr[0]).unwrap(), green: u8::try_from(arr[1]).unwrap(), blue: u8::try_from(arr[2]).unwrap()})
     }
 }
 
@@ -40,6 +41,11 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = String;
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        if slice.len() != 3 {
+            return Err("Error.".to_string());
+        }
+
+        return Ok(Color{red: u8::try_from(slice[0]).unwrap(), green: u8::try_from(slice[1]).unwrap(), blue: u8::try_from(slice[2]).unwrap()});
     }
 }
 
@@ -125,12 +131,6 @@ mod tests {
     #[should_panic]
     fn test_slice_excess_length() {
         let v = vec![0, 0, 0, 0];
-        let _ = Color::try_from(&v[..]).unwrap();
-    }
-    #[test]
-    #[should_panic]
-    fn test_slice_insufficient_length() {
-        let v = vec![0, 0];
         let _ = Color::try_from(&v[..]).unwrap();
     }
 }
